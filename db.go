@@ -117,7 +117,45 @@ func (db *Database) Clean() error {
 			err = e
 		}
 	}
+	db.files = nil
 	return err
+}
+
+// Scan root dir for allocated stacks
+// Warning! All files in root dir will be interpreted as stacks
+func (db *Database) Scan() error {
+	db.fileLock.Lock()
+	defer db.fileLock.Unlock()
+	return filepath.Walk(db.rootDir, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		key, err := url.QueryUnescape(info.Name())
+		if err != nil {
+			return err
+		}
+		if _, ok := db.files[key]; !ok {
+			fileName := filepath.Join(db.rootDir, info.Name())
+			stack, err := fstack.OpenStack(fileName)
+			if err != nil {
+				return err
+			}
+			log.Println("Found stack allocated at", fileName, "mapped to", key)
+			db.files[key] = stack
+		}
+		return nil
+	})
+}
+
+// Names of known stacks in the database
+func (db *Database) Names() []string {
+	db.fileLock.RLock()
+	defer db.fileLock.RUnlock()
+	names := []string{}
+	for name := range db.files {
+		names = append(names, name)
+	}
+	return names
 }
 
 //NewDatabase - create new database and start stack collector (closes outaded stack)
