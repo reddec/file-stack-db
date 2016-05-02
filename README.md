@@ -12,4 +12,5 @@ See [godoc](godoc.org/github.com/reddec/file-stack-db)
 
 # HTTP API
 
-See [swagger.yaml](swagger.yaml)
+See [swagger UI](http://editor.swagger.io/#/?import=https://raw.githubusercontent.com/reddec/file-stack-db/master/swagger.yaml) 
+or [swagger.yaml](swagger.yaml)
