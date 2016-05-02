@@ -47,7 +47,7 @@ func pushData(w http.ResponseWriter, r *http.Request) {
 			headers[key] = value[0]
 		}
 	}
-	stack, err := db.Find(vars["key"])
+	stack, err := db.Find(vars["key"], true)
 	if err != nil {
 		log.Println("[PUSH]", "Failed find stack", vars["key"], err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -72,10 +72,15 @@ func pushData(w http.ResponseWriter, r *http.Request) {
 
 func getLast(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	stack, err := db.Find(vars["key"])
+	stack, err := db.Find(vars["key"], false)
 	if err != nil {
 		log.Println("[PEAK]", "Failed find stack", vars["key"], err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if stack == nil {
+		log.Println("[PEAK]", "Stack", vars["key"], "not exists")
+		http.Error(w, "", http.StatusNotFound)
 		return
 	}
 	headers, body, err := stack.Peak()
@@ -101,10 +106,15 @@ func getLast(w http.ResponseWriter, r *http.Request) {
 
 func removeLast(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	stack, err := db.Find(vars["key"])
+	stack, err := db.Find(vars["key"], false)
 	if err != nil {
 		log.Println("[POP]", "Failed find stack", vars["key"], err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if stack == nil {
+		log.Println("[POP]", "Stack", vars["key"], "not exists")
+		http.Error(w, "", http.StatusNotFound)
 		return
 	}
 	headers, body, err := stack.Pop()
@@ -132,7 +142,11 @@ func main() {
 	address := flag.String("http", ":9000", "Basic HTTP API endpoint")
 	rootPath := flag.String("root", "./db", "Root dir for stacked database")
 	keepAlive := flag.Duration("keep-alive", 10*time.Second, "Opened file keep-alive timeout")
+	silent := flag.Bool("silent", false, "Discard log output")
 	flag.Parse()
+	if *silent {
+		log.SetOutput(ioutil.Discard)
+	}
 	fsdb, err := fstack.NewDatabase(*rootPath, *keepAlive)
 	if err != nil {
 		panic(err)

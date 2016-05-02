@@ -23,7 +23,7 @@ type Database struct {
 }
 
 //Find a stack or create new
-func (db *Database) Find(key string) (*fstack.Stack, error) {
+func (db *Database) Find(key string, create bool) (*fstack.Stack, error) {
 	var err error
 	// Double check
 	db.fileLock.RLock()
@@ -32,6 +32,10 @@ func (db *Database) Find(key string) (*fstack.Stack, error) {
 	if !ok {
 		fileName := filepath.Join(db.rootDir, url.QueryEscape(key))
 		db.fileLock.Lock()
+		defer db.fileLock.Unlock()
+		if _, err := os.Stat(fileName); os.IsNotExist(err) && !create {
+			return nil, nil
+		}
 		if fs, ok = db.files[key]; !ok {
 			log.Println("New stack allocated at", fileName)
 			fs, err = fstack.OpenStack(fileName)
@@ -39,7 +43,6 @@ func (db *Database) Find(key string) (*fstack.Stack, error) {
 		if err == nil {
 			db.files[key] = fs
 		}
-		db.fileLock.Unlock()
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +52,7 @@ func (db *Database) Find(key string) (*fstack.Stack, error) {
 
 // Get stack or create new. Panics on errors
 func (db *Database) Get(key string) *fstack.Stack {
-	s, err := db.Find(key)
+	s, err := db.Find(key, true)
 	if err != nil {
 		panic(err)
 	}
