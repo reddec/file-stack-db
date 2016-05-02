@@ -1,0 +1,116 @@
+swagger: '2.0'
+info:
+  version: "0.0.0"
+  title: CLI HTTP API
+
+# Describe your paths here
+paths:
+  /{section}:
+    post:
+      description: |
+        Add message to stack (PUSH).
+        Each header with prefix `S-` will be saved
+      parameters:
+        -
+          name: section
+          in: path
+          description: Section name
+          required: true
+          type: string
+        - name: message
+          in: body
+          required: true
+          description: Message content
+          schema:
+            type: string
+            format: binary
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: depth index
+            type: number
+            format: integer
+        400:
+          description: Request body couldn't be read
+          schema:
+            title: Error text
+            type: string
+        500:
+          description: Stack couldn't be created or opened
+          schema:
+            title: Error text
+            type: string
+        502:
+          description: Message couldn't be pushed
+          schema:
+            title: Error text
+            type: string
+    get:
+      description: |
+        Get last message from stack (PEAK). All headers 
+        pushed with `S-` prefix also will be 
+        appended to response headers
+      parameters:
+        -
+          name: section
+          in: path
+          description: Section name
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: Message content
+            type: string
+            format: binary
+        404:
+          description: Stack is not found or stack is empty
+          schema:
+            title: Error text
+            type: string
+        500:
+          description: Stack couldn't be opened
+          schema:
+            title: Error text
+            type: string
+        502:
+          description: Message couldn't be read
+          schema:
+            title: Error text
+            type: string
+    delete:
+      description: |
+        Get and remove last message from stack (POP). All headers 
+        pushed with `S-` prefix also will be 
+        appended to response headers
+      parameters:
+        -
+          name: section
+          in: path
+          description: Section name
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: Message content
+            type: string
+            format: binary
+        404:
+          description: Stack is not found or stack is empty
+          schema:
+            title: Error text
+            type: string
+        500:
+          description: Stack couldn't be opened
+          schema:
+            title: Error text
+            type: string
+        502:
+          description: Message couldn't be read
+          schema:
+            title: Error text
+            type: string

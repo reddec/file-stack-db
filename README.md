@@ -9,3 +9,7 @@ It provides:
 # Dev documentation
 
 See [godoc](godoc.org/github.com/reddec/file-stack-db)
+
+# HTTP API
+
+See [swagger.yaml](swagger.yaml)

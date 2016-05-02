@@ -44,7 +44,7 @@ func pushData(w http.ResponseWriter, r *http.Request) {
 	headers := map[string]string{}
 	for key, value := range r.Header {
 		if strings.HasPrefix("S-", key) {
-			headers[key] = value[0]
+			headers[key[2:]] = value[0]
 		}
 	}
 	stack, err := db.Find(vars["key"], true)
@@ -96,7 +96,7 @@ func getLast(w http.ResponseWriter, r *http.Request) {
 	}
 	sheaders := decodeHeaders(headers)
 	for key, value := range sheaders {
-		w.Header().Add(key, value)
+		w.Header().Add("S-"+key, value)
 	}
 	log.Println("[PEAK]", "Read stack", vars["key"], "headers:", len(headers), "bytes, body:", len(body), "bytes")
 	w.Header().Add("Count", strconv.Itoa(stack.Depth()))
