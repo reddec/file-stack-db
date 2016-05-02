@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -112,10 +113,11 @@ func removeLast(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	address := ""
-	rootPath := ""
-	keepAlive := 10 * time.Second
-	fsdb, err := fstack.NewDatabase(rootPath, keepAlive)
+	address := flag.String("http", ":9000", "Basic HTTP API endpoint")
+	rootPath := flag.String("root", "./db", "Root dir for stacked database")
+	keepAlive := flag.Duration("keep-alive", 10*time.Second, "Opened file keep-alive timeout")
+	flag.Parse()
+	fsdb, err := fstack.NewDatabase(*rootPath, *keepAlive)
 	if err != nil {
 		panic(err)
 	}
@@ -129,5 +131,5 @@ func main() {
 	router.Methods("GET").Path("/:key").HandlerFunc(getLast)
 	router.Methods("POST").Path("/:key").HandlerFunc(pushData)
 	router.Methods("DELete").Path("/:key").HandlerFunc(removeLast)
-	panic(http.ListenAndServe(address, router))
+	panic(http.ListenAndServe(*address, router))
 }
