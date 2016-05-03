@@ -143,7 +143,7 @@ func (db *Database) Scan() error {
 			if err != nil {
 				return err
 			}
-			log.Println("Found stack allocated at", fileName, "mapped to", key)
+			log.Println("Found stack allocated at", fileName, "mapped to", key, "with", stack.Depth(), "segments")
 			db.files[key] = stack
 		}
 		return nil
@@ -177,3 +177,6 @@ func NewDatabase(rootDir string, keepAlive time.Duration) (*Database, error) {
 	go db.cleanup()
 	return db, nil
 }
+
+// TODO: Sub sections?
+// TODO: HTT API names
