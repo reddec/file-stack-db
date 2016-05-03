@@ -1,0 +1,11 @@
+{
+	"ImportPath": "github.com/reddec/file-stack-db",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v62",
+	"Deps": [
+		{
+			"ImportPath": "github.com/reddec/file-stack",
+			"Rev": "266e2f9a703aa44e5852b3fe2d0bfcee441239da"
+		}
+	]
+}
