@@ -1,5 +1,5 @@
 # file-stack-db
-Key with historical values database based on [file-stack](github.com/reddec/file-stack)
+Key with historical values database based on [file-stack](http://github.com/reddec/file-stack)
 
 It provides:
 
@@ -10,12 +10,13 @@ It provides:
 
 Stack DB with RPC/RPC-HTTP/HTTP API:
 
-    go get -u github.com/reddec/file-stack-db/cmd/stackdbd
+    go get -u github.com/reddec/file-stack-db/cmd/...
 
+Use package manager for Debian/Centos by [packager.io](https://packager.io/gh/reddec/file-stack-db)
 
 # Dev documentation
 
-See [godoc](godoc.org/github.com/reddec/file-stack-db)
+See [godoc](http://godoc.org/github.com/reddec/file-stack-db)
 
 # HTTP API
 
